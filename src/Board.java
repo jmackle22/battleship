@@ -5,6 +5,7 @@ public class Board {
             {"O", "O", "O", "s", "O", "O", "O", "O", "O", "O"},
     };*/
     private String[][] board;
+    private int totalShipUnits; // todo: total ship units (determine winner when units reach 0)
 
 
     public Board() {

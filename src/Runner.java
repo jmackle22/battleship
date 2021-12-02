@@ -2,17 +2,7 @@ import java.util.Scanner;
 
 public class Runner {
     public static void main(String[] args) {
-        /*int[] pick = {7, 9, 6};
-        String[] temp = {"what", "hey", "no", "lombard", "ball", "red", "wilgrum", "mons", "is"};
-        for (int i = 0; i < pick.length; i++) {
-            System.out.print(temp[pick[i]-1] + " ");
-        }
-
-        for (String val : temp) {
-            System.out.print(val + " ");
-        }*/
-
-        Scanner sc = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
 
         System.out.println("O = empty\n" +
                 "X = hit,\n" +
@@ -30,6 +20,6 @@ public class Runner {
 
         System.out.println("Choose Square if You Dare???:");
 
-        Game.takeTurn(playerOne);
+        Game.takeTurnAgainst(playerOne);
     }
 }
