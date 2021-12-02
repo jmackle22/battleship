@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Runner {
     public static void main(String[] args) {
         /*int[] pick = {7, 9, 6};
@@ -10,6 +12,8 @@ public class Runner {
             System.out.print(val + " ");
         }*/
 
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("O = empty\n" +
                 "X = hit,\n" +
                 "▣ = hit ship,\n" +
@@ -19,13 +23,13 @@ public class Runner {
         Board playerOne = new Board();
         Board playerTwo = new Board();
 
-        playerOne.displayBoard();
-
         playerOne.placeShip(4, false, 7,3);
         playerOne.placeShip(3, true, 0,1);
 
-        playerOne.displayBoard();
+        playerOne.displayBoard(true);
 
-        playerOne.test(0, 0);
+        System.out.println("Choose Square if You Dare???:");
+
+        Game.takeTurn(playerOne);
     }
 }

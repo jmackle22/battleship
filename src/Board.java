@@ -4,7 +4,7 @@ public class Board {
             {"O", "O", "O", "S", "O", "S", "S", "O", "O", "O"},
             {"O", "O", "O", "s", "O", "O", "O", "O", "O", "O"},
     };*/
-    String[][] board;
+    private String[][] board;
 
 
     public Board() {
@@ -32,13 +32,18 @@ public class Board {
         }
     }
 
-    public void displayBoard() {
+    // display board (2 types: secretive (only show hits), non-secretive (show all))
+    public void displayBoard(boolean secret) {
         System.out.print("\n");
         System.out.println("    A B C D E F G H I J");
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + " | ");
             for (String val : board[i]) {
-                System.out.print(val + " ");
+                if (secret) {
+                    if (!val.equals("■")) {
+                        System.out.print(val + " ");
+                    } else System.out.print("O ");
+                } else System.out.print(val + " ");
             }
             System.out.print("|\n");
         }
@@ -65,8 +70,18 @@ public class Board {
         }
     }
 
-    // test
-    public String test(int x, int y) {
-        //todo: test for what is at a certain coord (ship, empty, etc.)
+    // nTest = number test (integers), cTest = char test (A1, b4)
+    public String nTest(int x, int y) {
+        if (x >= 0 && x <= 9 && y >= 0 && y <= 9) {
+            return board[y][x];
+        }
+        return null;
+    }
+    //christie.loud;
+    public String cTest(char c, int num) {
+        if ((num >= 0 && num <= 9) && (((int)Character.toLowerCase(c) - 97) <= 9)) {
+            return board[num][((int)Character.toLowerCase(c) - 97)];
+        }
+        return null;
     }
 }
