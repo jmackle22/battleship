@@ -13,10 +13,8 @@ public class Runner {
         Board playerOne = new Board();
         Board playerTwo = new Board();
 
-        playerOne.placeShip(4, false, 7,3);
-        playerOne.placeShip(3, true, 0,1);
-
-        playerOne.displayBoard(true);
+        playerOne.generateShips(1);
+        playerOne.displayBoard(false);
 
         System.out.println("Choose Square if You Dare???:");
 

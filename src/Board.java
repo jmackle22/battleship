@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Board {
     /*String[][] board = {
             {"O", "O", "O", "S", "O", "O", "O", "O", "O", "O"},
@@ -6,13 +8,9 @@ public class Board {
     };*/
     private String[][] board;
     private int totalShipUnits; // todo: total ship units (determine winner when units reach 0)
-
+    private static Random rand = new Random();
 
     public Board() {
-        initBoard();
-    }
-
-    private void initBoard() {
         this.board = new String[][]{
                 new String[10],
                 new String[10],
@@ -60,15 +58,18 @@ public class Board {
 
     // ship building
     public void placeShip(int size, boolean horizontal, int x, int y) {
-        if (horizontal) {
-            for (int i = 0; i < size; i++) {
-                this.editBoard(x+i, y, "■");
-            }
-        } else {
-            for (int i = 0; i < size; i++) {
-                this.editBoard(x, y+i, "■");
-            }
+        for (int i = 0; i < size; i++) {
+            if (horizontal) {this.editBoard(x+i, y, "■");
+            } else {this.editBoard(x, y+i, "■");}
         }
+    }
+
+    public void generateShips(int amount/*, size boundaries (2-4)*/) {
+        //todo: randomly generate ships
+        int x = rand.nextInt(10);
+        int y = rand.nextInt(10);
+        int horizontal = rand.nextInt(2);
+        System.out.println(x + "\n" + y + "\n" + horizontal);
     }
 
     // nTest = number test (integers), cTest = char test (A1, b4)

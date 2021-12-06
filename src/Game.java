@@ -2,16 +2,35 @@ import java.util.Scanner;
 
 public class Game {
     private static Scanner sc = new Scanner(System.in);
+    private String playerOne;
+    private String playerTwo;
+    private Board boardOne;
+    private Board boardTwo;
+    private int turn;
 
-    // game loop, functions
+    // init game
     public Game() {
-        // todo: init game things (look at nim for inspiration)
+        System.out.println("Welcome to battleship");
+
+        // get players names
+        System.out.println("Please enter your name (player 1):");
+        this.playerOne = sc.nextLine();
+        System.out.println("Please enter your name (player 2):");
+        this.playerTwo = sc.nextLine();
+
+        // randomize turn and create boards (player 1 and 2)
+        this.turn = (int) (Math.random() * 2 + 1);
+        this.boardOne = new Board();
+        this.boardTwo = new Board();
     }
 
-    public void gameLoop(Board playerOne, Board playerTwo) {
+    // game loop
+    public void play(Board playerOne, Board playerTwo) {
         // todo: while loop (until either player's totalShipUnits == 0)
+        // this cant be done until shipunits is inplemented and the generateShips function works
     }
 
+    // function
     public static void takeTurnAgainst(Board attackOn) {
         // keep in mind that 'attackOn' is the board that is being attacked
 
@@ -25,19 +44,20 @@ public class Game {
         if ((attackOn.cTest(c, n) == null)) {
             System.out.println("ERROR: invalid trajectory");
             takeTurnAgainst(attackOn);
-        } else if (attackOn.cTest(c, n).equals("■")) {
+        } else if (attackOn.cTest(c, n).equals("■")) { // HIT
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "\uD83D\uDCA5");
             attackOn.displayBoard(true);
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "▣");
-            System.out.println("X : Hit ship!!!! at " + Character.toUpperCase(c) + n + "\n  take another turn");
+            System.out.println("X : Hit ship!!!! at " + Character.toUpperCase(c) + n + "\n  take another turn...");
             takeTurnAgainst(attackOn);
-        } else if (attackOn.cTest(c, n).equals("O")) {
+        } else if (attackOn.cTest(c, n).equals("O")) { // MISS
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "\uD83D\uDC04");
             attackOn.displayBoard(true);
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "O");
             System.out.println("O: miss.... at " + Character.toUpperCase(c) + n);
         } else {
             // i think this is when the trajectory is already a hit ship
+            System.out.println("ERROR: invalid trajectory (already a hit ship)");
             takeTurnAgainst(attackOn);
         }
     }
