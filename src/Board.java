@@ -59,17 +59,52 @@ public class Board {
     // ship building
     public void placeShip(int size, boolean horizontal, int x, int y) {
         for (int i = 0; i < size; i++) {
-            if (horizontal) {this.editBoard(x+i, y, "■");
-            } else {this.editBoard(x, y+i, "■");}
+            if (horizontal) {this.editBoard(x+i, y, "■");} else {this.editBoard(x, y+i, "■");}
         }
     }
 
-    public void generateShips(int amount/*, size boundaries (2-4)*/) {
-        //todo: randomly generate ships
-        int x = rand.nextInt(10);
-        int y = rand.nextInt(10);
-        int horizontal = rand.nextInt(2);
-        System.out.println(x + "\n" + y + "\n" + horizontal);
+    public void generateShips(int amount) {
+        while (amount > 0) {
+            // generate rand num 0 to 9 for x and y
+            int size = 3; //todo: different size ships
+            int x = rand.nextInt(10);
+            int y = rand.nextInt(10);
+            boolean horizontal = true;
+            if (rand.nextInt(2) == 0) {horizontal = false;}
+            System.out.println(x + "\n" + y + "\n" + horizontal);
+
+            // check if a ship can be placed at x, y
+            boolean canBePlaced = true; //todo: analyze this
+            for (int i = 0; i < size; i++) {
+                String[] s;
+                if (horizontal) {s = sTest(x+i, y);} else {s = sTest(x, y+i);}
+
+                for (String n : s) {
+                    if (n != null && n.equals("■")) {
+                        canBePlaced = false;
+                        break;
+                    }
+                }
+            }
+            System.out.println("can be placed: " + canBePlaced);
+
+            // place ship if it is possible
+            if (canBePlaced) {
+                placeShip(3, horizontal, x, y);
+                amount--;
+            }
+        }
+
+    }
+
+    // Checking Ship Surroundings STEST
+    public String[] sTest(int x, int y) {
+       String[] s = {"O","O","O","O"};
+        s[0] = nTest(x,y-1);
+        s[1] = nTest(x+1,y);
+        s[2] = nTest(x,y+1);
+        s[3] = nTest(x-1,y);
+       return s;
     }
 
     // nTest = number test (integers), cTest = char test (A1, b4)
@@ -87,3 +122,67 @@ public class Board {
         return null;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

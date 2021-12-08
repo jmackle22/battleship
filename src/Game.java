@@ -10,7 +10,7 @@ public class Game {
 
     // init game
     public Game() {
-        System.out.println("Welcome to battleship");
+        System.out.println("Welcome to Battleship!");
 
         // get players names
         System.out.println("Please enter your name (player 1):");
@@ -42,7 +42,7 @@ public class Game {
 
         // shoot missile
         if ((attackOn.cTest(c, n) == null)) {
-            System.out.println("ERROR: invalid trajectory");
+            System.out.println("ERROR: Invalid trajectory");
             takeTurnAgainst(attackOn);
         } else if (attackOn.cTest(c, n).equals("■")) { // HIT
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "\uD83D\uDCA5");
@@ -57,8 +57,12 @@ public class Game {
             System.out.println("O: miss.... at " + Character.toUpperCase(c) + n);
         } else {
             // i think this is when the trajectory is already a hit ship
-            System.out.println("ERROR: invalid trajectory (already a hit ship)");
+            System.out.println("ERROR: Invalid trajectory (Ship has already been hit!)");
             takeTurnAgainst(attackOn);
         }
     }
 }
+
+
+
+

@@ -13,11 +13,55 @@ public class Runner {
         Board playerOne = new Board();
         Board playerTwo = new Board();
 
-        playerOne.generateShips(1);
+        playerOne.generateShips(5);
         playerOne.displayBoard(false);
 
-        System.out.println("Choose Square if You Dare???:");
 
-        Game.takeTurnAgainst(playerOne);
+
+        //System.out.println("Choose Square if You Dare???:");
+        //Game.takeTurnAgainst(playerOne);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
