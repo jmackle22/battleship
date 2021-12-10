@@ -13,16 +13,22 @@ public class Runner {
         Board playerOne = new Board();
         Board playerTwo = new Board();
 
-        playerOne.generateShips(5);
+        playerOne.randomShip(2);
+        playerOne.randomShip(3);
+        playerOne.randomShip(3);
+        playerOne.randomShip(4);
+        playerOne.randomShip(5);
+
         playerOne.displayBoard(false);
 
 
 
         //System.out.println("Choose Square if You Dare???:");
+        //Why do we have these comments still here?
+        //Should I delete these?
         //Game.takeTurnAgainst(playerOne);
     }
 }
-
 
 
 

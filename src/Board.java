@@ -63,38 +63,37 @@ public class Board {
         }
     }
 
-    public void generateShips(int amount) {
-        while (amount > 0) {
-            // generate rand num 0 to 9 for x and y
-            int size = 3; //todo: different size ships
-            int x = rand.nextInt(10);
-            int y = rand.nextInt(10);
-            boolean horizontal = true;
-            if (rand.nextInt(2) == 0) {horizontal = false;}
-            System.out.println(x + "\n" + y + "\n" + horizontal);
+    public void randomShip(int size) {
+        // generate rand num 0 to 9 for x and y
+        int x = 10;
+        int y = 10;
+        // catch if the x or y in accordance with the ship size is out of bounds (accounts for horizontal and vertical)
+        while (x+size > 9 || y+size > 9) {
+            x = rand.nextInt(10);
+            y = rand.nextInt(10);
+        }
+        // 50% chance of horizontal/vertical
+        boolean horizontal = true;
+        if (rand.nextInt(2) == 0) {horizontal = false;}
 
-            // check if a ship can be placed at x, y
-            boolean canBePlaced = true; //todo: analyze this
-            for (int i = 0; i < size; i++) {
-                String[] s;
-                if (horizontal) {s = sTest(x+i, y);} else {s = sTest(x, y+i);}
+        // check if a ship can be placed at x, y
+        boolean canBePlaced = true;
+        for (int i = 0; i < size; i++) {
+            String[] s;
+            if (horizontal) {s = sTest(x+i, y);} else {s = sTest(x, y+i);}
 
-                for (String n : s) {
-                    if (n != null && n.equals("■")) {
-                        canBePlaced = false;
-                        break;
-                    }
+            for (String n : s) {
+                if (n != null && n.equals("■")) {
+                    canBePlaced = false;
+                    break;
                 }
-            }
-            System.out.println("can be placed: " + canBePlaced);
-
-            // place ship if it is possible
-            if (canBePlaced) {
-                placeShip(3, horizontal, x, y);
-                amount--;
             }
         }
 
+        // place ship if it is possible, otherwise repeat loop until a ship can be placed
+        if (canBePlaced) {
+            placeShip(size, horizontal, x, y);
+        } else {randomShip(size);}
     }
 
     // Checking Ship Surroundings STEST
@@ -107,14 +106,15 @@ public class Board {
        return s;
     }
 
-    // nTest = number test (integers), cTest = char test (A1, b4)
+    // nTest = number test (integers)
     public String nTest(int x, int y) {
         if (x >= 0 && x <= 9 && y >= 0 && y <= 9) {
             return board[y][x];
         }
         return null;
     }
-    //christie.loud;
+
+    // cTest = char test (ex: A1, b4)
     public String cTest(char c, int num) {
         if ((num >= 0 && num <= 9) && (((int)Character.toLowerCase(c) - 97) <= 9)) {
             return board[num][((int)Character.toLowerCase(c) - 97)];
@@ -122,23 +122,6 @@ public class Board {
         return null;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
