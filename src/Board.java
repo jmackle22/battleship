@@ -7,7 +7,7 @@ public class Board {
             {"O", "O", "O", "s", "O", "O", "O", "O", "O", "O"},
     };*/
     private String[][] board;
-    private int totalShipUnits; // todo: total ship units (determine winner when units reach 0)
+    private int totalShipUnits; // updates whenever getShipUnits is called
     private static Random rand = new Random();
 
     public Board() {
@@ -48,6 +48,7 @@ public class Board {
         }
     }
 
+    // edit board
     public void editBoard(int x, int y, String edit) {
         if ((x >= 0 && x < 10) && (y >= 0 && y < 10)) {
             board[y][x] = edit;
@@ -96,6 +97,14 @@ public class Board {
         } else {randomShip(size);}
     }
 
+    public void generateShips() {
+        randomShip(2);
+        randomShip(3);
+        randomShip(3);
+        randomShip(4);
+        randomShip(5);
+    }
+
     // Checking Ship Surroundings STEST
     public String[] sTest(int x, int y) {
        String[] s = {"O","O","O","O"};
@@ -121,24 +130,21 @@ public class Board {
         }
         return null;
     }
+
+    // update total ship units
+    public int getShipUnits() {
+        int total = 0;
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                if (nTest(x, y) == "■") {
+                    total++;
+                }
+            }
+        }
+        this.totalShipUnits = total;
+        return this.totalShipUnits;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
