@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class Game {
     private static Scanner sc = new Scanner(System.in);
+    private static String turnPlayer;
     private String playerOne;
     private String playerTwo;
     private Board boardOne;
@@ -31,20 +32,31 @@ public class Game {
     }
 
     // game loop
-    public void play(Board playerOne, Board playerTwo) {
+    public void play() {
         // todo: while loop (until either player's totalShipUnits == 0)
         while (boardOne.getShipUnits() > 0 && boardTwo.getShipUnits() > 0) {
-            
+            if (this.turn == 1) {
+                this.turnPlayer = playerOne;
+                takeTurnAgainst(boardTwo);
+            } else if (this.turn == 2) {
+                this.turnPlayer = playerTwo;
+                takeTurnAgainst(boardOne);
+            }
+            if (this.turn == 1) {this.turn = 2;} else if (this.turn == 2) {this.turn = 1;}
         }
 
         System.out.println("Game is over" +
                 "\n  " + playerOne + "'s total ship units: " + boardOne.getShipUnits() +
                 "\n  " + playerTwo + "'s total ship units: " + boardTwo.getShipUnits());
+
+        if (boardOne.getShipUnits() == 0) declareWinner(playerOne);
+        if (boardTwo.getShipUnits() == 0) declareWinner(playerTwo);
     }
 
     // function
-    public static void takeTurnAgainst(Board attackOn) {
+    private static void takeTurnAgainst(Board attackOn) {
         // keep in mind that 'attackOn' is the board that is being attacked
+        System.out.println("\nIt is " + turnPlayer + "'s turn.");
 
         // take input and get vars
         System.out.println("Enter Trajectory Of Missile!:");
@@ -66,13 +78,23 @@ public class Game {
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "\uD83D\uDC04");
             attackOn.displayBoard(true);
             attackOn.editBoard(((int)Character.toLowerCase(c) - 97), n, "O");
+            //nice
             System.out.println("O: Miss.... At " + Character.toUpperCase(c) + n);
             attackOn.getShipUnits();
         } else {
-            // i think this is when the trajectory is already a hit ship, sounds good bro
+            // i think this is when the trajectory is already a hit ship, sounds good bro thats awesome dude sounds awesome bro thats incredible hahahahahaha lol awesome bro
             System.out.println("ERROR: Invalid Trajectory (Ship has already been hit!)");
             takeTurnAgainst(attackOn);
         }
+    }
+
+    private static void declareWinner(String winner) {
+        // pretty winner statement (useless but fun string manipulation stuff)
+        String winnerStatement = "\uD83C\uDFC6 The winner is " + winner + "! \uD83C\uDFC6";
+        String line = new String(new char[winnerStatement.length()]).replace('\0', '≈');
+        System.out.println("\n" + line);
+        System.out.println(winnerStatement);
+        System.out.println(line + "\n");
     }
 }
 

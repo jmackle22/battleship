@@ -10,14 +10,11 @@ public class Runner {
                 "■ = ship,\n" +
                 "▯ = miss");
 
-        Board playerOne = new Board();
-        Board playerTwo = new Board();
+        Game game = new Game();
+        game.play();
 
-        playerOne.displayBoard(false);
 
         //System.out.println("Choose Square if You Dare???:");
-        //Why do we have these comments still here?
-        //Should I delete these?
         //Game.takeTurnAgainst(playerOne);
     }
 }
@@ -56,3 +53,16 @@ public class Runner {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+// nice
