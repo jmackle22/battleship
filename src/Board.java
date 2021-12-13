@@ -1,11 +1,6 @@
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
-    /*String[][] board = {
-            {"O", "O", "O", "S", "O", "O", "O", "O", "O", "O"},
-            {"O", "O", "O", "S", "O", "S", "S", "O", "O", "O"},
-            {"O", "O", "O", "s", "O", "O", "O", "O", "O", "O"},
-    };*/
     private String[][] board;
     private int totalShipUnits; // updates whenever getShipUnits is called
     //private static Random rand = new Random();
@@ -24,17 +19,16 @@ public class Board {
                 new String[10],
                 new String[10],
         };
-        // convert nulls into Os
+        // convert nulls into -s
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == null) {board[i][j] = "O";}
+                if (board[i][j] == null) {board[i][j] = "-";}
             }
         }
     }
 
     // display board (2 types: secretive (only show hits), non-secretive (show all))
     public void displayBoard(boolean secret) {
-        System.out.print("\n");
         System.out.println("    A B C D E F G H I J");
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + " | ");
@@ -42,7 +36,7 @@ public class Board {
                 if (secret) {
                     if (!val.equals("■")) {
                         System.out.print(val + " ");
-                    } else System.out.print("O ");
+                    } else System.out.print("- ");
                 } else System.out.print(val + " ");
             }
             System.out.print("|\n");
@@ -82,14 +76,10 @@ public class Board {
         // check if a ship can be placed at x, y
         boolean canBePlaced = true;
         for (int i = 0; i < size; i++) {
-            String[] s;
-            if (horizontal) {s = sTest(x+i, y);} else {s = sTest(x, y+i);} // run a surround-Test on each coord of the ship
-            for (String n : s) { // if a ship block is located around any of the coordinates, set canBePlaced to false
-                if (n != null && n.equals("■")) {
-                    canBePlaced = false;
-                    break;
-                }
-            }
+            boolean ship = false;
+            // check each coord of the ship to see if another shipUnit is surrounding it
+            if (horizontal) {ship = checkForShip(x+i, y);} else {ship = checkForShip(x, y+i);}
+            if (ship) canBePlaced = false;
         }
 
         // place ship if it is possible, otherwise repeat loop until a ship can be placed
@@ -101,9 +91,21 @@ public class Board {
     // generate many ships
     public void generateShips(int[] sizes) {for (int i : sizes) randomShip(i);}
 
+    public boolean checkForShip(int x, int y) {
+        boolean ship = false;
+        String[] s = sTest(x, y);
+        for (String n : s) { // if a ship block is located around the coordinate, set ship to true
+            if (n != null && n.equals("■")) {
+                ship = true;
+                break;
+            }
+        }
+        return ship;
+    }
+
     // Checking Ship Surroundings STEST
     public String[] sTest(int x, int y) {
-       String[] s = {"O","O","O","O"};
+       String[] s = {"-","-","-","-"};
        s[0] = nTest(x,y-1);
        s[1] = nTest(x+1,y);
        s[2] = nTest(x,y+1);
