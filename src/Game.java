@@ -3,13 +3,22 @@ import java.io.IOException;
 
 public class Game {
     private static Scanner sc = new Scanner(System.in);
-    private static String turnPlayer;
+    private static int[] ships = {2, 3, 3, 4, 5}; // CONFIG: sizes of randomly generated ships for each player
+    private String turnPlayer;
     private String playerOne;
     private String playerTwo;
     private Board boardOne;
     private Board boardTwo;
     private int turn;
-    private static int turnCounter;
+    private int turnCounter;
+    private boolean gameOver;
+    private boolean streak;
+    private int plrOneMisses;
+    private int plrTwoMisses;
+    private int plrOneHits;
+    private int plrTwoHits;
+    private int plrOneStreaks;
+    private int plrTwoStreaks;
 
     // init game
     public Game() {
@@ -25,57 +34,81 @@ public class Game {
         this.turn = (int) (Math.random() * 2 + 1);
         if (this.turn == 1) {this.turnPlayer = playerOne;} else if (this.turn == 2) {this.turnPlayer = playerTwo;}
         this.turnCounter = 0;
+        this.streak = false;
         this.boardOne = new Board();
         this.boardTwo = new Board();
+        this.gameOver = false;
 
         // generate ships on each board and update ship units
-        this.boardOne.generateShips(new int[]{2, 3, 3, 4, 5});
-        this.boardTwo.generateShips(new int[]{2, 3, 3, 4, 5});
+        this.boardOne.generateShips(ships);
+        this.boardTwo.generateShips(ships);
         this.boardOne.getShipUnits();
         this.boardTwo.getShipUnits();
 
-        // show players their boards
-        //seeBoards();
+        // reset stats
+        this.plrOneMisses = 0;
+        this.plrTwoMisses = 0;
+        this.plrOneHits = 0;
+        this.plrTwoHits = 0;
+        this.plrOneStreaks = 0;
+        this.plrTwoStreaks = 0;
     }
 
     // game loop
     public void play() {
-        // todo: all that is left is ending the game correctly (display winner and total turns)
-        while (boardOne.getShipUnits() > 0 || boardTwo.getShipUnits() > 0) {
+        while (boardOne.getShipUnits() > 0 && boardTwo.getShipUnits() > 0) {
             if (this.turn == 1) {
                 this.turnPlayer = playerOne;
                 takeTurn(boardOne, boardTwo, playerTwo);
+                boardOne.getShipUnits(); // update ship units
             } else if (this.turn == 2) {
                 this.turnPlayer = playerTwo;
                 takeTurn(boardTwo, boardOne, playerOne);
+                boardOne.getShipUnits(); // update ship units
             }
+            // increment turnCounter
+            this.turnCounter++;
+            // switch turn
             if (this.turn == 1) {this.turn = 2;} else if (this.turn == 2) {this.turn = 1;}
         }
 
-        System.out.println("Game is over" +
-                "\n  " + playerOne + "'s total ship units: " + boardOne.getShipUnits() +
-                "\n  " + playerTwo + "'s total ship units: " + boardTwo.getShipUnits());
+        clearScreen();
 
-        if (boardOne.getShipUnits() == 0) declareWinner(playerOne);
-        if (boardTwo.getShipUnits() == 0) declareWinner(playerTwo);
+        System.out.println("Game is over in " + turnCounter +  " turns. Statistics:" +
+                "\n  " + playerOne + ":" +
+                "\n    ship units: " + boardOne.getShipUnits() +
+                "\n          hits: " + plrOneHits +
+                "\n        misses: " + plrOneMisses +
+                "\n       streaks: " + plrOneStreaks +
+                "\n  " + playerTwo + ":" +
+                "\n    ship units: " + boardTwo.getShipUnits() +
+                "\n          hits: " + plrTwoHits +
+                "\n        misses: " + plrTwoMisses +
+                "\n       streaks: " + plrTwoStreaks);
+
+        if (boardOne.getShipUnits() == 0) declareWinner(playerTwo);
+        if (boardTwo.getShipUnits() == 0) declareWinner(playerOne);
     }
 
-    // function
+    // take turns
     private void takeTurn(Board playerBoard, Board opposingBoard, String opponentName) {
-        System.out.println("It is " + turnPlayer + "'s turn.\n  Press enter to see your own board.");
+        // turn loop (looped through in the play() method)
+        System.out.println("It is " + this.turnPlayer + "'s turn. You have " + playerBoard.getShipUnits() + " ship units left. \n  Press enter to see your own board.");
         waitForEnter();
-        playerBoard.displayBoard(false);
+        playerBoard.displayBoard(false, "Your");
         System.out.println("Press enter...");
         waitForEnter();
         System.out.println("Attack " + opponentName + "'s board:");
-        opposingBoard.displayBoard(true);
-        attack(opposingBoard);
+        opposingBoard.displayBoard(true, opponentName + "'s");
+        attack(opposingBoard, opponentName);
+        if (this.gameOver) return; // exit method if game is over
         System.out.println("Press enter, then give the computer to " + opponentName);
         waitForEnter();
         clearScreen();
     }
 
-    private static void attack(Board attackOn) {
+    // main attack method
+    private void attack(Board attackOn, String opponentName) {
         // keep in mind that 'attackOn' is the board that is being attacked
 
         // take input and get vars
@@ -100,59 +133,61 @@ public class Game {
         // shoot missile
         if ((attackOn.cTest(c, n) == null)) { // ERR
             System.out.println("ERROR: Invalid trajectory");
-            attack(attackOn);
-        } else if (attackOn.cTest(c, n).equals("◆")) { // ERR
+            attack(attackOn, opponentName);
+        } else if (attackOn.cTest(c, n).equals(Board.hitShip)) { // ERR
             System.out.println("ERROR: Invalid trajectory (Ship has already been hit!)");
-            attack(attackOn);
-        } else if (attackOn.cTest(c, n).equals("□")) { // ERR
+            attack(attackOn, opponentName);
+        } else if (attackOn.cTest(c, n).equals(Board.miss)) { // ERR
             System.out.println("ERROR: Invalid trajectory (You already tried this spot)");
-            attack(attackOn);
-        } else if (attackOn.cTest(c, n).equals("■")) { // HIT
-            // edit board, differentiate hitmarker from previously hit ship
-            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, "●");
-            attackOn.displayBoard(true);
-            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, "◆");
+            attack(attackOn, opponentName);
+        } else if (attackOn.cTest(c, n).equals(Board.ship)) { // HIT
+            // update hit stat
+            if (this.turn == 1) this.plrOneHits++; else if (this.turn == 2) this.plrTwoHits++;
+
+            // if streak = true, up the value
+            if (this.streak) {
+                if (this.turn == 1) this.plrOneStreaks++; else if (this.turn == 2) this.plrTwoStreaks++;
+            }
+            this.streak = true; // set streak to true in case the player makes another hit
+
+            // edit board, differentiate hit marker from previously hit ship
+            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, Board.newHit);
+            attackOn.displayBoard(true, opponentName + "'s");
+            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, Board.hitShip);
 
             // determine whether a ship was only hit or if it was sunk
             String hitOrSunk = "";
-            if (attackOn.checkForShip(((int) Character.toLowerCase(c) - 97), n)) hitOrSunk = "Hit a"; else hitOrSunk = "SUNK the";
+            if (attackOn.checkForShip(((int) Character.toLowerCase(c) - 97), n)) {hitOrSunk = "Hit a";} else {hitOrSunk = "SUNK the";}
 
+            // determine if game is over and exit method if so
+            if (attackOn.getShipUnits() == 0) {
+                System.out.println("You sunk their last ship!\n");
+                this.gameOver = true;
+                return;
+            }
             // message
-            System.out.println("●: " + hitOrSunk + " ship!!!! at " + Character.toUpperCase(c) + n + ".  Take another turn, " + turnPlayer);
-            attack(attackOn);
-        } else if (attackOn.cTest(c, n).equals("-")) { // MISS
-            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, "\uD83D\uDC04");
-            attackOn.displayBoard(true);
-            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, "□");
-            System.out.println("□: Miss.... At " + Character.toUpperCase(c) + n);
+            System.out.println(Board.newHit + ": " + hitOrSunk + " ship!!!! at " + Character.toUpperCase(c) + n + ".  Take another turn, " + this.turnPlayer);
+            attack(attackOn, opponentName);
+
+        } else if (attackOn.cTest(c, n).equals(Board.empty)) { // MISS
+            // update miss stat
+            if (this.turn == 1) this.plrOneMisses++; else if (this.turn == 2) this.plrTwoMisses++;
+
+            // reset streak
+            this.streak = false;
+
+            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, Board.newMiss);
+            attackOn.displayBoard(true, opponentName + "'s");
+            attackOn.editBoard(((int) Character.toLowerCase(c) - 97), n, Board.miss);
+            System.out.println(Board.newMiss + ": Miss.... At " + Character.toUpperCase(c) + n);
             attackOn.getShipUnits();
         }
-
-        // increment turnCounter
-        turnCounter++;
     }
 
-    private void seeBoards() {
-        clearScreen();
-        System.out.println("Press enter to see your board, " + playerOne + ".");
-        waitForEnter();
-        boardOne.displayBoard(false);
-        System.out.println("Press enter when ready");
-        waitForEnter();
+    // waits for the user to press enter
+    private void waitForEnter() {try {System.in.read();} catch (IOException e) {e.printStackTrace();}}
 
-        clearScreen();
-        System.out.println("Press enter to see your board, " + playerTwo + ".");
-        waitForEnter();
-        boardTwo.displayBoard(false);
-        System.out.println("Press enter when ready");
-        waitForEnter();
-        clearScreen();
-    }
-
-    private void waitForEnter() {
-        try {System.in.read();} catch (IOException e) {e.printStackTrace();}
-    }
-
+    // fancy print statement that declares winner
     public static void declareWinner(String winner) {
         // pretty winner statement (useless but fun string manipulation stuff)
         String winnerStatement = "\uD83C\uDFC6 The winner is " + winner + "! \uD83C\uDFC6";
@@ -162,13 +197,8 @@ public class Game {
         System.out.println(line + "\n");
     }
 
-    public static void clearScreen() {
-        for (int i = 0; i < 30; i++) {
-            System.out.print("\n");
-        }
-    }
+    // prints a bunch of lines. done to avoid seeing your opponent's board
+    public static void clearScreen() {for (int i = 0; i < 30; i++) {System.out.print("\n");}}
 }
 
-
-
-
+// code written by Devan Gonzalez, William Christie, Daniel Acebal, and Joseph Mackle

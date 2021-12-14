@@ -3,7 +3,13 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Board {
     private String[][] board;
     private int totalShipUnits; // updates whenever getShipUnits is called
-    //private static Random rand = new Random();
+    // style configuration
+    public static String empty = "~";
+    public static String ship = "■";
+    public static String hitShip = "◆";
+    public static String newHit = "●";
+    public static String miss = "□";
+    public static String newMiss = "◎";//\uD83D\uDC04";
 
     // instantiates the board itself and configures it
     public Board() {
@@ -19,27 +25,34 @@ public class Board {
                 new String[10],
                 new String[10],
         };
-        // convert nulls into -s
+        // convert nulls into emptys
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == null) {board[i][j] = "-";}
+                if (board[i][j] == null) {board[i][j] = empty;}
             }
         }
     }
 
     // display board (2 types: secretive (only show hits), non-secretive (show all))
-    public void displayBoard(boolean secret) {
+    public void displayBoard(boolean secret, String name) {
         System.out.println("    A B C D E F G H I J");
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + " | ");
             for (String val : board[i]) {
                 if (secret) {
-                    if (!val.equals("■")) {
+                    if (!val.equals(ship)) {
                         System.out.print(val + " ");
-                    } else System.out.print("- ");
+                    } else System.out.print(empty + " ");
                 } else System.out.print(val + " ");
             }
-            System.out.print("|\n");
+            // display name pretty
+            if (!name.isEmpty()) {
+                if      (i == 3) System.out.print("|         ┏╾╼╾╼╾╼╾╼╾╼╾╼\n");
+                else if (i == 4) System.out.print("|         ╿  "+ name +"\n");
+                else if (i == 5) System.out.print("|         ╽  Board     \n");
+                else if (i == 6) System.out.print("|         ┗╾╼╾╼╾╼╾╼╾╼╾╼\n");
+                else System.out.print("|\n");
+            } else System.out.print("|\n");
         }
     }
 
@@ -55,7 +68,7 @@ public class Board {
     // ship building methods
     public void placeShip(int size, boolean horizontal, int x, int y) {
         for (int i = 0; i < size; i++) {
-            if (horizontal) {this.editBoard(x+i, y, "■");} else {this.editBoard(x, y+i, "■");}
+            if (horizontal) {this.editBoard(x+i, y, ship);} else {this.editBoard(x, y+i, ship);}
         }
     }
 
@@ -76,10 +89,10 @@ public class Board {
         // check if a ship can be placed at x, y
         boolean canBePlaced = true;
         for (int i = 0; i < size; i++) {
-            boolean ship = false;
+            boolean shipFound = false;
             // check each coord of the ship to see if another shipUnit is surrounding it
-            if (horizontal) {ship = checkForShip(x+i, y);} else {ship = checkForShip(x, y+i);}
-            if (ship) canBePlaced = false;
+            if (horizontal) {shipFound = checkForShip(x+i, y);} else {shipFound = checkForShip(x, y+i);}
+            if (shipFound) canBePlaced = false;
         }
 
         // place ship if it is possible, otherwise repeat loop until a ship can be placed
@@ -91,25 +104,26 @@ public class Board {
     // generate many ships
     public void generateShips(int[] sizes) {for (int i : sizes) randomShip(i);}
 
+    // check if a ship is anywhere around x, y
     public boolean checkForShip(int x, int y) {
-        boolean ship = false;
+        boolean shipFound = false;
         String[] s = sTest(x, y);
-        for (String n : s) { // if a ship block is located around the coordinate, set ship to true
-            if (n != null && n.equals("■")) {
-                ship = true;
+        for (String n : s) { // if a ship block is located around the coordinate, set shipFound to true
+            if (n != null && n.equals(ship)) {
+                shipFound = true;
                 break;
             }
         }
-        return ship;
+        return shipFound;
     }
 
     // Checking Ship Surroundings STEST
     public String[] sTest(int x, int y) {
-       String[] s = {"-","-","-","-"};
-       s[0] = nTest(x,y-1);
-       s[1] = nTest(x+1,y);
-       s[2] = nTest(x,y+1);
-       s[3] = nTest(x-1,y);
+       String[] s = {empty,empty,empty,empty};
+       s[0] = nTest(x,y-1); // N
+       s[1] = nTest(x+1,y); // E
+       s[2] = nTest(x,y+1); // S
+       s[3] = nTest(x-1,y); // W
        return s;
     }
 
@@ -130,7 +144,7 @@ public class Board {
         int total = 0;
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[y].length; x++) {
-                if (nTest(x, y) == "■") {
+                if (nTest(x, y) == ship) {
                     total++;
                 }
             }
@@ -140,24 +154,4 @@ public class Board {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//nice
+// code written by Devan Gonzalez, William Christie, Daniel Acebal, and Joseph Mackle
